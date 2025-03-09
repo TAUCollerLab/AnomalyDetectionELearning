@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Univariate Anomaly Detection Methods</title>
+    <style>
+        .tab {
+            overflow: hidden;
+            border-bottom: 1px solid #ccc;
+        }
+        .tab button {
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            transition: 0.3s;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            font-weight: bold;
+            color: red;
+            background-color: white;
+            border-top: 2px solid black;
+        }
+        .tabcontent {
+            display: none;
+            border: 1px solid #ccc;
+            border-top: none;
+            padding: 20px;
+            background: white;
+        }
+        .tab button.active {
+            font-weight: bold;
+            color: red;
+        }
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 20px; }
+        th, td { border: 1px solid black; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Univariate Anomaly Detection Methods</h1>
+    <p>This section provides an overview of methods used for detecting anomalies in a single time series (univariate anomaly detection) based on the referenced paper.</p>
+    
+    <h2>Summary of Methods</h2>
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Model-Based</th>
+            <th>Density-Based</th>
+            <th>Histogramming</th>
+            <th>Discord Detection</th>
+            <th>Dissimilarity-Based</th>
+            <th>Frequency-Based</th>
+            <th>Information Theory</th>
+        </tr>
+        <tr>
+            <td>Point Anomalies</td>
+            <td>&#10003;</td>
+            <td>&#10003;</td>
+            <td>&#10003;</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>&#10003;</td>
+        </tr>
+        <tr>
+            <td>Subsequence Anomalies</td>
+            <td>&#10003;</td>
+            <td></td>
+            <td></td>
+            <td>&#10003;</td>
+            <td>&#10003;</td>
+            <td>&#10003;</td>
+            <td>&#10003;</td>
+        </tr>
+    </table>
+    
+    <h2>Explanation of Categories</h2>
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Model-Based')">Model-Based</button>
+        <button class="tablinks" onclick="openTab(event, 'Density-Based')">Density-Based</button>
+        <button class="tablinks" onclick="openTab(event, 'Histogramming')">Histogramming</button>
+        <button class="tablinks" onclick="openTab(event, 'Discord Detection')">Discord Detection</button>
+        <button class="tablinks" onclick="openTab(event, 'Dissimilarity-Based')">Dissimilarity-Based</button>
+        <button class="tablinks" onclick="openTab(event, 'Frequency-Based')">Frequency-Based</button>
+        <button class="tablinks" onclick="openTab(event, 'Information Theory')">Information Theory</button>
+    </div>
+    <div id="Model-Based" class="tabcontent">
+    <h3>What does this method do?</h3>
+    <p>Model-based methods create a mathematical model that represents how a time series should behave under normal conditions. If a new data point significantly deviates from the model's prediction, it is flagged as an anomaly.</p>
+    
+    <h3>How does it work?</h3>
+    <p>The method builds a predictive model using historical data and calculates expected values for new observations. If a point falls outside the expected range, it is considered an anomaly.</p>
+    
+    <h3>Simple Example</h3>
+    <p>Imagine you check your electricity bill every month, and it's always around $50-$60. Suddenly, one month you receive a $500 bill - this is an anomaly.</p>
+    
+    <h3>Real-World Example</h3>
+    <p>In industrial monitoring, machines have an expected operating temperature range. If a sensor detects a sudden and significant increase in temperature, the system identifies it as an anomaly, possibly indicating a malfunction.</p>
+    
+    <h3>How to use this method?</h3>
+    <ul>
+        <li>Train a model using past data.</li>
+        <li>Predict future values based on historical trends.</li>
+        <li>Compare actual values to predictions.</li>
+        <li>Flag significant deviations as anomalies.</li>
+    </ul>
+</div><div id="Density-Based" class="tabcontent">
+    <h3>What does this method do?</h3>
+    <p>Density-based methods detect anomalies by examining how closely grouped data points are. Normal points cluster together, while anomalies appear isolated.</p>
+    
+    <h3>How does it work?</h3>
+    <p>A density-based algorithm calculates the local density around each point. If a point is far from all clusters, it is considered an anomaly.</p>
+    
+    <h3>Simple Example</h3>
+    <p>Imagine a concert where most people stand in groups. If one person is standing alone far away, they would seem unusual.</p>
+    
+    <h3>Real-World Example</h3>
+    <p>Credit card fraud detection: most transactions occur in expected locations and within a common price range. If a transaction is made from a different country and for an unusually high amount, it might be flagged as fraudulent.</p>
+    
+    <h3>How to use this method?</h3>
+    <ul>
+        <li>Gather data - collect time series values.</li>
+        <li>Apply a density-based algorithm - e.g., DBSCAN (Density-Based Spatial Clustering of Applications with Noise).</li>
+        <li>Flag outliers - points in low-density areas are considered anomalies.</li>
+    </ul>
+</div><div id="Histogramming" class="tabcontent">
+    <h3>What does this method do?</h3>
+    <p>Histogramming divides the data into bins and analyzes the frequency of values within each bin. Rare values fall into sparsely populated bins, marking them as potential anomalies.</p>
+    
+    <h3>How does it work?</h3>
+    <p>The algorithm creates a histogram of historical data and then checks whether new values fit within common bins or belong to rare ones.</p>
+    
+    <h3>Simple Example</h3>
+    <p>If you count how many times students attend school per month, and most students attend 18-22 days, but one student attends only one day, this would stand out.</p>
+    
+    <h3>Real-World Example</h3>
+    <p>In monitoring website response times, if most pages load within 200ms but one request takes 5000ms, this suggests an issue with the server.</p>
+    
+    <h3>How to use this method?</h3>
+    <ul>
+        <li>Build a histogram - define bins based on past data.</li>
+        <li>Compare new values - if a point falls into an unexpected bin, it is flagged as an anomaly.</li>
+    </ul>
+</div><div id="Discord Detection" class="tabcontent">
+    <h3>What does this method do?</h3>
+    <p>Discord detection identifies the most unusual subsequences in a time series - those that significantly differ from all others.</p>
+    
+    <h3>How does it work?</h3>
+    <p>The method compares each subsequence with all others and finds the one that deviates the most.</p>
+    
+    <h3>Simple Example</h3>
+    <p>If you usually exercise for 30 minutes daily but one day suddenly exercise for 3 hours, that would be unusual.</p>
+    
+    <h3>Real-World Example</h3>
+    <p>In medical ECG monitoring, most heartbeats follow a predictable pattern. If a patient suddenly exhibits an irregular pattern, it could indicate a health problem.</p>
+    
+    <h3>How to use this method?</h3>
+    <ul>
+        <li>Extract all subsequences from the time series.</li>
+        <li>Measure their similarity using distance metrics.</li>
+        <li>Flag the most dissimilar subsequence as a potential anomaly.</li>
+    </ul>
+</div><div id="Dissimilarity-Based" class="tabcontent">
+    <h3>What does this method do?</h3>
+    <p>Dissimilarity-based methods compare different subsequences within a time series and detect patterns that are significantly different from the rest.</p>
+    
+    <h3>How does it work?</h3>
+    <p>These methods identify sequences that do not match known patterns by measuring similarity between subsequences.</p>
+    
+    <h3>Simple Example</h3>
+    <p>If you sign your name the same way every day, but one day your signature looks entirely different, it would be an anomaly.</p>
+    
+    <h3>Real-World Example</h3>
+    <p>In manufacturing, machines follow predictable operational patterns. If a machine's vibration pattern changes significantly, it could indicate wear or an impending breakdown.</p>
+    
+    <h3>How to use this method?</h3>
+    <ul>
+        <li>Extract subsequences from the data.</li>
+        <li>Measure dissimilarity using distance metrics.</li>
+        <li>Identify highly dissimilar sequences as anomalies.</li>
+    </ul>
+</div><div id="Frequency-Based" class="tabcontent">
+    <h3>What does this method do?</h3>
+    <p>This method analyzes periodic patterns in a time series. If the expected frequency suddenly changes or disappears, it may indicate an anomaly.</p>
+    
+    <h3>How does it work?</h3>
+    <p>It applies a Fourier Transform or other frequency analysis techniques to examine the dominant frequencies in the data.</p>
+    
+    <h3>Simple Example</h3>
+    <p>A clock rings every hour. If it suddenly rings every 30 minutes or stops ringing entirely, something is wrong.</p>
+    
+    <h3>Real-World Example</h3>
+    <p>In power grid monitoring, electricity should operate at a stable 50Hz frequency. A deviation from this frequency might indicate a fault in the power system.</p>
+    
+    <h3>How to use this method?</h3>
+    <ul>
+        <li>Analyze periodic signals in the data.</li>
+        <li>Compare observed frequencies with expected ones.</li>
+        <li>Flag sudden frequency changes as anomalies.</li>
+    </ul>
+</div><div id="Information Theory" class="tabcontent">
+    <h3>What does this method do?</h3>
+    <p>Information theory-based methods measure changes in entropy (randomness). A sudden increase in entropy suggests the system has become less predictable, indicating an anomaly.</p>
+    
+    <h3>How does it work?</h3>
+    <p>It calculates entropy or compression complexity over time and detects periods where the randomness significantly increases.</p>
+    
+    <h3>Simple Example</h3>
+    <p>If a classroom is usually quiet but suddenly students start yelling chaotically, the unpredictability has increased, signaling a shift.</p>
+    
+    <h3>Real-World Example</h3>
+    <p>In cybersecurity, network traffic usually follows predictable patterns. If entropy suddenly increases, it may indicate a cyberattack or an unexpected system behavior.</p>
+    
+    <h3>How to use this method?</h3>
+    <ul>
+        <li>Compute entropy over time.</li>
+        <li>Monitor for unexpected increases.</li>
+        <li>Flag high-entropy periods as potential anomalies.</li>
+    </ul>
+</div>
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        document.getElementsByClassName("tablinks")[0].click();
+    </script>
+<button onclick="window.location.href='SelfLearning_p3.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">Continue</button>
+</body>
+</html>

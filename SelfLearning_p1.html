@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Anomaly Detection in Time Series</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .hidden { display: none; }
+        .question { margin-bottom: 20px; }
+        .error { color: red; display: none; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        canvas { max-width: 400px; max-height: 250px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Introduction to Anomaly Detection in Time Series</h1>
+    	<p>Based on the paper <a href="https://dl.acm.org/doi/pdf/10.1145/3444690"> <b>A Review on Outlier/Anomaly Detection in Time Series Data</b></a></p>
+	<p>An anomaly in time series data is an observation that significantly deviates from expected behavior.</p>
+    
+    <h2>1. Point Anomalies</h2>
+    <p>A point anomaly is an individual data point that deviates significantly from the expected behavior in a time series. Given a time series \( X = \{x_1, x_2, ..., x_T\} \), a point anomaly at time \( t \) is defined as:</p>
+    <div class="formula">
+        \[ |x_t - \hat{x_t}| > \tau \]
+    </div>
+    <p>where \( \hat{x_t} \) represents the expected value of \( x_t \), and \( \tau \) is a threshold defining the degree of deviation.</p>
+    <p><strong>Example:</strong> A sudden drop in temperature in a weather dataset.</p>
+    <canvas id="pointAnomalyChart"></canvas>
+    
+    <h2>2. Sequence Anomalies</h2>
+    <p>A sequence anomaly occurs when a contiguous segment of a time series deviates from normal patterns. Let \( S \) be a subsequence within \( X \):</p>
+    <div class="formula">
+        \[ S = \{x_p, x_{p+1}, ..., x_{p+n-1}\} \]
+    </div>
+    <p>The subsequence \( S \) is considered anomalous if:</p>
+    <div class="formula">
+        \[ d(S, S^*) > \tau \]
+    </div>
+    <p>where \( d(S, S^*) \) is a dissimilarity measure comparing \( S \) to reference patterns \( S^* \), and \( \tau \) is a predefined threshold.</p>
+    <p><strong>Example:</strong> A manufacturing robot arm suddenly slows down for a short period.</p>
+    <canvas id="subsequenceAnomalyChart"></canvas>
+    
+    
+    
+    <h2>3. Whole Time Series Anomalies</h2>
+    <p>A whole time series anomaly occurs when an entire series behaves differently from other comparable series. Unlike point and sequence anomalies, which focus on deviations within a single time series, this anomaly type is detected by comparing different time series.</p>
+    <p><em>Note:</em> This type of anomaly detection is beyond the scope of this tutorial.</p>
+    <p><strong>Example:</strong> Electricity consumption in one household is consistently higher than similar homes.</p>
+    <canvas id="wholeSeriesAnomalyChart"></canvas>
+    
+    <h2>Exercise: Classify the Anomalies</h2>
+    <p>Identify the type of anomaly for each of the following cases.</p>
+    
+    <table>
+        <tr>
+            <th>Example</th>
+            <th>Type of Anomaly</th>
+        </tr>
+        <tr>
+            <td>A heart rate monitor records irregular spikes for a few minutes</td>
+            <td><select id="answer1">
+                <option value="">-- Select --</option>
+                <option value="point">Point Anomaly</option>
+                <option value="subsequence">Subsequence Anomaly</option>
+                <option value="whole">Whole Time Series Anomaly</option>
+                <option value="none">No Anomaly</option>
+            </select></td>
+        </tr>
+        <tr>
+            <td>A security system detects multiple unauthorized access attempts in a short time</td>
+            <td><select id="answer2">
+                <option value="">-- Select --</option>
+                <option value="point">Point Anomaly</option>
+                <option value="subsequence">Subsequence Anomaly</option>
+                <option value="whole">Whole Time Series Anomaly</option>
+                <option value="none">No Anomaly</option>
+            </select></td>
+        </tr>
+        <tr>
+            <td>A shipment tracking system shows a package repeatedly switching locations unusually</td>
+            <td><select id="answer3">
+                <option value="">-- Select --</option>
+                <option value="point">Point Anomaly</option>
+                <option value="subsequence">Subsequence Anomaly</option>
+                <option value="whole">Whole Time Series Anomaly</option>
+                <option value="none">No Anomaly</option>
+            </select></td>
+        </tr>
+        <tr>
+            <td>A city traffic camera logs vehicle speeds fluctuating predictably throughout the day</td>
+            <td><select id="answer4">
+                <option value="">-- Select --</option>
+                <option value="point">Point Anomaly</option>
+                <option value="subsequence">Subsequence Anomaly</option>
+                <option value="whole">Whole Time Series Anomaly</option>
+                <option value="none">No Anomaly</option>
+            </select></td>
+        </tr>
+        <tr>
+            <td>A weather station reports steady temperature readings without changes for 10 consecutive days</td>
+            <td><select id="answer5">
+                <option value="">-- Select --</option>
+                <option value="point">Point Anomaly</option>
+                <option value="subsequence">Subsequence Anomaly</option>
+                <option value="whole">Whole Time Series Anomaly</option>
+                <option value="none">No Anomaly</option>
+            </select></td>
+        </tr>
+    </table>
+    <button id="checkAnswers" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background-color: red; color: white; border: none; cursor: pointer;">Check</button>
+    <button id="nextPage" class="hidden" onclick="window.location.href='SelfLearning_p2.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">Continue</button>
+    <script>
+        const correctAnswers = {
+            answer1: "subsequence",
+            answer2: "point",
+            answer3: "subsequence",
+            answer4: "none",
+            answer5: "whole"
+        };
+        document.getElementById("checkAnswers").addEventListener("click", function() {
+            let allCorrect = true;
+            for (let key in correctAnswers) {
+                let select = document.getElementById(key);
+                if (select.value !== correctAnswers[key]) {
+                    select.style.border = "2px solid red";
+                    allCorrect = false;
+                } else {
+                    select.style.border = "2px solid green";
+                }
+            }
+            if (allCorrect) {
+                document.getElementById("nextPage").classList.remove("hidden");
+            }
+        });
+    </script>
+    
+<script>
+    function generateSeasonalData(base, amplitude, frequency, length, anomalyStart = null, anomalyLength = 0, anomalyValue = 0) {
+        return Array.from({ length }, (_, i) => 
+            base + amplitude * Math.sin((2 * Math.PI * i) / frequency) + 
+            (i >= anomalyStart && i < anomalyStart + anomalyLength ? anomalyValue : 0)
+        );
+    }
+    
+    function createChart(canvasId, labels, datasets, xLabel, yLabel) {
+        new Chart(document.getElementById(canvasId), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'top' }
+                },
+                scales: {
+                    x: { display: true, title: { display: true, text: xLabel } },
+                    y: { display: true, title: { display: true, text: yLabel } }
+                }
+            }
+        });
+    }
+    
+    const labels = Array.from({ length: 30 }, (_, i) => i + 1);
+    createChart("pointAnomalyChart", labels, [{ label: "Temperature Drop (Point Anomaly)", data: generateSeasonalData(20, 2, 10, 30, 15, 1, -10), borderColor: 'red', fill: false }], "Time (Hours)", "Temperature (°C)");
+    createChart("subsequenceAnomalyChart", labels, [{ label: "Robot Slowdown (Subsequence Anomaly)", data: generateSeasonalData(70, 5, 10, 30, 10, 5, -15), borderColor: 'red', fill: false }], "Time (Minutes)", "Speed");
+    createChart("wholeSeriesAnomalyChart", labels, [
+        { label: "House A (Normal)", data: generateSeasonalData(300, 20, 10, 30), borderColor: 'blue', fill: false },
+        { label: "House B (Normal)", data: generateSeasonalData(320, 20, 10, 30), borderColor: 'green', fill: false },
+        { label: "House C (Anomalous Series)", data: generateSeasonalData(500, 40, 10, 30), borderColor: 'red', fill: false }
+    ], "Time (Days)", "Electricity Consumption (kWh)");
+</script>
+</body>
+</html>

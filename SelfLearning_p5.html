@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excess Mortality During the Corona Period</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .hidden { display: none; }
+        .tab {
+            overflow: hidden;
+            border-bottom: 1px solid #ccc;
+        }
+        .tab button {
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            transition: 0.3s;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            font-weight: bold;
+            color: red;
+            background-color: white;
+            border-top: 2px solid black;
+        }
+        .tabcontent {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 20px;
+            background: white;
+        }
+        .tabcontent.active {
+            display: block;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let radiosQ2 = document.querySelectorAll('input[name="q2"]');
+            radiosQ2.forEach((radio) => {
+                radio.addEventListener("change", function() {
+                    document.getElementById("answerExplanationQ2").classList.remove("hidden");
+                });
+            });
+            let tabs = document.getElementsByClassName("tablinks");
+            if (tabs.length > 0) {
+                tabs[0].click();
+            }
+            let checkButton = document.getElementById("checkAnswers");
+            if (checkButton) {
+                checkButton.addEventListener("click", function() {
+                    let level = document.getElementById("level").checked;
+                    let trend = document.getElementById("trend").checked;
+                    let seasonality = document.getElementById("seasonality").checked;
+                    let seasonInput = document.getElementById("seasonInput").value.trim();
+                    let noise = document.getElementById("noise").checked;
+                    let feedback = document.getElementById("feedback");
+                    if (level && trend && seasonality && noise && seasonInput === "12") {
+                        feedback.innerHTML = "Correct! All components appear, there are 12 seasons.";
+                        feedback.style.color = "green";
+                    } else {
+                        feedback.innerHTML = "Incorrect. Please review your selections.";
+                        feedback.style.color = "red";
+                    }
+                });
+            }
+            let submitButton = document.getElementById("submitAnswers");
+            if (submitButton) {
+                submitButton.addEventListener("click", function() {
+                    let userID = document.getElementById("userID").value.trim();
+                    let conclusions = document.getElementById("conclusionsQ3").value.trim();
+    
+                    if (!/^\d{8,9}$/.test(userID)) {
+                        feedback2.innerHTML = "ID must be 8 or 9 digits.";
+                        feedback2.style.color = "red";
+
+                        return;
+                    }
+                    if (conclusions === "") {
+                        feedback2.innerHTML = "Please enter your conclusions before submitting.";
+                        feedback2.style.color = "red";
+                        return;
+                    }
+                    feedback2.innerHTML = "";
+                    document.getElementById("colabLink").classList.remove("hidden");
+    
+                    let responseText = `User ID: ${userID}\n\nConclusions:\n${conclusions}`;
+    let blob = new Blob([responseText], { type: "text/plain" });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "SelfLearn_Response.txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+                });
+              }
+        
+          
+        });
+
+      
+            
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</head>
+<body>
+    <h1>Excess Mortality During the Corona Period</h1>
+    
+    <h2>Introduction</h2>
+    <p>Excess mortality refers to the number of deaths exceeding the expected baseline during a specific period. It is used to measure the impact of major public health crises, such as the COVID-19 pandemic.</p>
+    <p>This analysis will explore whether COVID-19 caused excess deaths in Israel.</p>
+    
+    <h2>Data Source</h2>
+    <p>The dataset includes <strong>monthly death counts</strong> in Israel from January 2010 to December 2024, categorized for all ages and for individuals aged 70 and older.</p>
+    <p>You can access the dataset here: 
+        <a href="https://drive.google.com/file/d/1wW5-1otMmQzgFYlfdiTV77biRYxXqIrC/view?usp=sharing" target="_blank">Download Mortality Data</a>
+    </p>
+    
+    <h2>Tasks</h2>
+    
+    <h3>Observing the Data</h3>
+    <p>Load the dataset and generate time series plots for:</p>
+    <ul>
+        <li>Total deaths across all ages.</li>
+        <li>Deaths for individuals aged 70 and below.</li>
+        <li>Deaths for individuals aged 70 and older.</li>
+    </ul>
+    <p>Analyze the trends and identify any significant changes in mortality patterns.</p>
+    <h3>Answer the Following Questions</h3>
+    
+    <div class="tab">
+        
+        <button class="tablinks" onclick="openTab(event, 'Question1')">Question 1</button>
+        <button class="tablinks" onclick="openTab(event, 'Question2')">Question 2</button>
+        <button class="tablinks" onclick="openTab(event, 'Question3')">Question 3</button>
+    </div>
+    <div id="Question1" class="tabcontent">
+        <p>Which of the following components appear in the plot? (Select all that apply)</p>
+        <ul>
+            <div><input type="checkbox" id="level"> Level</div>
+            <div><input type="checkbox" id="trend"> Trend</div>
+            <div><input type="checkbox" id="seasonality"> Seasonality with <input type="text" id="seasonInput" size="2"> seasons</div>
+            <div><input type="checkbox" id="noise"> Noise</div>
+        </ul>
+        <button id="checkAnswers" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background-color: red; color: white; border: none; cursor: pointer;">Check</button>
+        <p id="feedback" style="margin-top: 10px; font-weight: bold;"></p>
+    </div>
+    <div id="Question2" class="tabcontent">
+        <p>COVID-19 in Israel began in March 2020. If we want to assess excess mortality over a one-year period, which method would be the most appropriate? (Select one)</p>
+        <ul>
+            <div><input type="radio" name="q2" value="estimation"> <strong>Estimation model-based:</strong> Estimate the baseline using the entire dataset (both before and after COVID-19) and compare the estimate to observed mortality from March 2020 to February 2021.</div>
+            <div><input type="radio" name="q2" value="prediction"> <strong>Prediction model-based:</strong> Predict mortality for the period from March 2020 to February 2021 using only past data (January 2010 - March 2020).</div>
+        </ul>
+        <p id="answerExplanationQ2" class="hidden" style="margin-top: 20px; padding: 10px; background-color: #e8f4fa; border-left: 5px solid #4CAF50;">
+            <strong>The correct answer is: Prediction model-based.</strong> The reason is that COVID-19 is an ongoing health crisis that may still cause excess mortality. If we include future data (beyond the first year of COVID-19), we might learn from periods with excess deaths and fail to detect anomalies in the first year of the pandemic.
+        </p>
+    </div>
+    <div id="Question3" class="tabcontent">
+        <p>We will now evaluate excess mortality in young and adult populations.</p>
+        <p><strong>Task:</strong> Write a regression model to assess excess deaths.</p>
+        <ol>
+            <li>Add a trend indicator.</li>
+            <li>Add a month indicator.</li>
+            <li>Partition the data: training set (up to Feb 2020), validation set (March 2020 - Feb 2021).</li>
+            <li>Fit a linear regression model with <strong>Y = Death_Below_70</strong> and <strong>X = const, trend, and month.</strong></li>
+            <li>Predict the deaths for the validation period.</li>
+            <li>Evaluate residuals on the <strong>entire dataset.</strong></li>
+            <li>Construct a Shewhart chart on residuals with bounds = [-2std, 2std]. Ensure that the standard deviation is computed from training data only.</li>
+            <li>Observe the residuals of predicted data - are they within the bounds?</li>
+            <li>Repeat the analysis for <strong>Y = Death_70_Up</strong></li>
+        </ol>
+        <p><strong>Write your conclusions here:</strong></p>
+        <textarea id="conclusionsQ3" rows="4" cols="50" placeholder="Type your conclusions..."></textarea>
+        <p><strong>Enter your ID:</strong></p>
+        <input type="text" id="userID" placeholder="Enter your ID here" style="width: 100%; max-width: 300px; padding: 5px;">
+        <button id="submitAnswers" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background-color: blue; color: white; border: none; cursor: pointer;">Submit</button>
+        <p id="feedback2" style="margin-top: 10px; font-weight: bold;"></p>
+<p style='color:red'><strong>Clicking Submit will download your conclusions to a local file. Please upload the file to Moodle.</strong></p>
+
+        <p id="colabLink" class="hidden" style="margin-top: 20px; padding: 10px; background-color: #e8f4fa; border-left: 5px solid #4CAF50;">
+          The code for this exercise is available here: 
+          <a href="https://colab.research.google.com/drive/1xXxwfBSKHqG2M-5e5jJuyzcInFVDIaCQ?usp=sharing" target="_blank">Google Colab Notebook</a>
+        </p>
+        
+    </div>
+
+
+</body>
+</html>

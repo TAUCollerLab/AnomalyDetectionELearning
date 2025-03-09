@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model-Based Univariate Anomaly Detection</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="sales_chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <style>
+        .tab {
+            overflow: hidden;
+            border-bottom: 1px solid #ccc;
+        }
+        .tab button {
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            transition: 0.3s;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            font-weight: bold;
+            color: red;
+            background-color: white;
+            border-top: 2px solid black;
+        }
+        .tabcontent {
+            display: none;
+            border: 1px solid #ccc;
+            border-top: none;
+            padding: 20px;
+            background: white;
+        }
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .hidden { display: none; }
+        .question { margin-bottom: 20px; }
+        .error { color: red; display: none; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 20px; }
+        th, td { border: 1px solid black; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Model-Based Univariate Anomaly Detection</h1>
+    
+    <h2>What are Model-Based Methods?</h2>
+    <p>Model-based methods create mathematical representations of normal time series behavior. When a new observation deviates significantly from this model, it is flagged as an anomaly.</p>
+    
+    <div style="width: 600px; height: 300px; margin: auto;">
+    <canvas id="salesChart"></canvas>
+</div>
+    
+    <h2>Types of Model-Based Approaches</h2>
+    <p>There are two main types of model-based anomaly detection approaches:</p>
+    <ul>
+        <li><strong>Estimation Models:</strong> These models estimate the underlying distribution or structure of the data and flag deviations.</li>
+        <li><strong>Prediction Models:</strong> These models predict future values based on past data, and anomalies occur when observations significantly deviate from predictions.</li>
+    </ul>
+    
+    <h3>Table 1: Data Used in Model-based Techniques in Univariate Time Series 
+(<a href='https://dl.acm.org/doi/pdf/10.1145/3444690' target='_blank'>from reference paper</a>)</h3>
+<div class="formula">
+\[
+\begin{array}{|c|c|c|c|}
+\hline
+ \textbf{Model Type} & \textbf{Data Used} & \textbf{Expected Value} & \textbf{Point Outliers} \\
+\hline
+ \text{Estimation Models} & \{x_{t-k_1}, ..., x_t, ..., x_{t+k_2}\} & \hat{x_t} & |x_t - \hat{x_t}| > \tau \\
+\hline
+ \text{Prediction Models} & \{x_{t-k}, ..., x_{t-1}\} & \hat{x_t} & |x_t - \hat{x_t}| > \tau \\
+\hline
+\end{array}
+\]
+</div>
+    
+    
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var ctx = document.getElementById('salesChart').getContext('2d');
+        var days = Array.from({ length: 30 }, (_, i) => i + 1);
+        var meanSales = 10000;
+        var stdDev = 1000;
+        var upperLimit = meanSales + 2 * stdDev;
+        var lowerLimit = meanSales - 2 * stdDev;
+        
+        // Generate normal sales data within limits
+        var sales = days.map(day => Math.max(Math.min(meanSales + (Math.random() * 2 - 1) * stdDev, upperLimit), lowerLimit));
+        
+        // Introduce an anomaly on day 12
+        sales[11] = meanSales - 3 * stdDev;
+        
+        var anomalyData = sales.map((value, index) => index === 11 ? value : null);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: days,
+                datasets: [
+                    {
+                        label: 'Sales Revenue',
+                        data: sales,
+                        borderColor: 'orange',
+                        fill: false,
+                        pointRadius: 5,
+                        pointBackgroundColor: 'orange'
+                    },
+                    {
+                        label: 'Mean Sales',
+                        data: days.map(() => meanSales),
+                        borderColor: 'blue',
+                        borderDash: [5, 5],
+                        fill: false
+                    },
+                    {
+                        label: 'Upper Control Limit (2?)',
+                        data: days.map(() => upperLimit),
+                        borderColor: 'green',
+                        borderDash: [5, 5],
+                        fill: false
+                    },
+                    {
+                        label: 'Lower Control Limit (2?)',
+                        data: days.map(() => lowerLimit),
+                        borderColor: 'green',
+                        borderDash: [5, 5],
+                        fill: false
+                    },
+                    {
+                        label: 'Anomaly',
+                        data: anomalyData,
+                        borderColor: 'red',
+                        backgroundColor: 'red',
+                        pointRadius: 6,
+                        pointStyle: 'circle'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'Time (Days)' } },
+                    y: { title: { display: true, text: 'Sales Revenue' } },
+                }
+            }
+        });
+    });
+</script>
+<h2>Exercise: Choose Estimation or Prediction Models</h2>
+    <p>For each of the following cases, determine whether an <strong>Estimation Model</strong> or <strong>Prediction Model</strong> is more appropriate.</p>
+    
+    <table>
+        <tr>
+            <th>Example</th>
+            <th>Model Type</th>
+        </tr>
+        <tr>
+            <td>Detecting unusual fluctuations in stock market prices over time</td>
+            <td><select id="answer1">
+                <option value="">-- Select --</option>
+                <option value="estimation">Estimation Model</option>
+                <option value="prediction">Prediction Model</option>
+            </select></td>
+        </tr>
+        <tr>
+            <td>Early detection of Alzheimer disease in patients
+                  <div> <p id="alzheimersExplanation" class="hidden" style="margin-top: 20px; padding: 10px; background-color: #e8f4fa; border-left: 5px solid #4CAF50;">
+                    <strong>Explanation:</strong> Prediction models can be used for early detection of Alzheimer’s disease by analyzing patterns in cognitive assessments, speech data, and MRI scans over time. Machine learning models can track subtle changes in these metrics and predict the likelihood of disease progression, enabling earlier intervention and treatment.
+                  </p></div>
+            </td>
+            <td><select id="answer2">
+                <option value="">-- Select --</option>
+                <option value="estimation">Estimation Model</option>
+                <option value="prediction">Prediction Model</option>
+            </select></td>
+        </tr>
+        <tr>
+            <td>Identifying deviations in daily sales compared to typical patterns</td>
+            <td><select id="answer3">
+                <option value="">-- Select --</option>
+                <option value="estimation">Estimation Model</option>
+                <option value="prediction">Prediction Model</option>
+            </select></td>
+        </tr>
+    </table>
+    <button id="checkAnswers" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background-color: red; color: white; border: none; cursor: pointer;">Check</button>
+    <button id="nextPage" class="hidden" onclick="window.location.href='SelfLearning_p4.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">Continue</button>
+
+    <script>
+        const correctAnswers = {
+            answer1: "estimation",
+            answer2: "prediction",
+            answer3: "estimation"
+        };
+        document.getElementById("checkAnswers").addEventListener("click", function() {
+            let allCorrect = true;
+            for (let key in correctAnswers) {
+                let select = document.getElementById(key);
+                if (select.value !== correctAnswers[key]) {
+                    select.style.border = "2px solid red";
+                    allCorrect = false;
+                } else {
+                    select.style.border = "2px solid green";
+                }
+            }
+            if (allCorrect) {
+                document.getElementById("nextPage").classList.remove("hidden");
+                document.getElementById("alzheimersExplanation").classList.remove("hidden");
+            }
+        });
+    </script>
+</body>
+</html>

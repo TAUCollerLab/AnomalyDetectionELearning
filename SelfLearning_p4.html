@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base and Regression-Based Models</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .content-box { border: 1px solid #ccc; padding: 20px; background: #f9f9f9; margin-bottom: 20px; }
+        canvas {
+          width: 500px !important;
+          height: 250px !important;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Base and Regression-Based Models for Univariate Anomaly Detection</h1>
+    
+    <h2>1. Base Models</h2>
+    <div class="content-box">
+        <p>Base models assume that the underlying time series follows a relatively simple statistical process. These models are commonly used when the primary goal is to detect anomalies relative to a predefined threshold.</p>
+        <p>A key example of a base model is the <strong>Shewhart Control Chart</strong>, which establishes upper and lower control limits based on statistical thresholds.</p>
+        
+        <h3>Shewhart Control Chart</h3>
+        <p>This method monitors whether a time series deviates from its expected range. It defines control limits:</p>
+        <div class="formula">
+            \[
+            UCL = \mu + k \sigma, \quad LCL = \mu - k \sigma
+            \]
+        </div>
+        <p>Where:</p>
+        <ul>
+            <li>\( \mu \) is the mean of the series</li>
+            <li>\( \sigma \) is the standard deviation</li>
+            <li>\( k \) is a multiplier (typically ~2 for 95% confidence)</li>
+        </ul>
+        <p>Points falling outside these limits are flagged as anomalies.</p>
+    </div>
+    
+    <h2>2. Regression-Based Models</h2>
+    <div class="content-box">
+        <p>Regression-based models extend base models by accounting for additional time series components such as trend and seasonality. These models are useful when the assumption of a stationary time series does not hold.</p>
+        <p>Instead of monitoring raw values, regression-based methods focus on the residuals after removing baseline components.</p>
+        
+        <h3>Mathematical Formulation</h3>
+        <p>A standard regression model takes the form:</p>
+        <div class="formula">
+            \[
+            x_t = f(t) + \epsilon_t
+            \]
+        </div>
+        <p>Where:</p>
+        <ul>
+            <li>\( x_t \) is the observed time series</li>
+            <li>\( f(t) \) captures baseline components (trend, seasonality)</li>
+            <li>\( \epsilon_t \) represents residual noise</li>
+        </ul>
+        <p>Anomalies are identified by monitoring \( \epsilon_t \), which should follow a normal distribution under typical conditions.</p>
+        <h3>Sales Revenue Example</h3>
+        <p>The following example demonstrates how regression-based models are used to monitor sales revenue, account for trend and seasonality, and detect anomalies in residuals.</p>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 20px;">
+            <h3>Sales Revenue Data</h3>
+            <div style="width: 700px; height: 250px;"><canvas id="salesChart"></canvas></div>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 20px;">
+            <h3>Residuals with Shewhart Control Limits</h3>
+            <div style="width: 700px; height: 250px;"><canvas id="residualsChart"></canvas></div>
+        </div>
+
+    </div>
+    
+      <button onclick="window.location.href='SelfLearning_p5.html'" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer;">Continue</button>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var days = Array.from({ length: 42 }, (_, i) => i + 1);
+            var meanSales = days.map(d => 50 + 0.5 * d);
+            var seasonality = days.map(d => 10 * Math.sin(2 * Math.PI * (d % 7) / 7));
+            var noise = days.map(() => (Math.random() * 6 - 3));
+            var sales = meanSales.map((val, i) => val + seasonality[i] + noise[i]);
+            sales[10] -= 15;
+            sales[30] += 15;
+            var predictedSales = meanSales.map((val, i) => val + seasonality[i]);
+            var residuals = sales.map((val, i) => val - predictedSales[i]);
+            var stdDev = Math.sqrt(residuals.reduce((sum, r) => sum + r * r, 0) / residuals.length);
+            var upperLimit = 2 * stdDev;
+            var lowerLimit = -2 * stdDev;
+            var anomalyData = residuals.map((r, i) => (i === 10 || i === 30) ? r : null);
+            
+            new Chart(document.getElementById('salesChart'), {
+                type: 'line',
+                data: { labels: days, datasets: [{ label: 'Sales Revenue', data: sales, borderColor: 'blue', fill: false }, { label: 'Predicted Sales', data: predictedSales, borderColor: 'orange', borderDash: [5, 5], fill: false }]},
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+            
+            new Chart(document.getElementById('residualsChart'), {
+                type: 'line',
+                data: { labels: days, datasets: [{ label: 'Residuals', data: residuals, borderColor: 'blue', fill: false }, { label: 'Upper Control Limit', data: days.map(() => upperLimit), borderColor: 'green', borderDash: [5, 5], fill: false }, { label: 'Lower Control Limit', data: days.map(() => lowerLimit), borderColor: 'green', borderDash: [5, 5], fill: false }, { label: 'Anomalies', data: anomalyData, borderColor: 'red', pointBackgroundColor: 'red', pointRadius: 5, pointStyle: 'circle', fill: false }]} });
+        });
+    </script>
+</body>
+</html>
